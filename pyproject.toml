@@ -1,0 +1,35 @@
+[project]
+name = "forum-spam-filter"
+version = "0.1.0"
+description = "DistilBERT classifier for forum spam"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "datasets>=3.2.0",
+    "numpy>=2.2.1",
+    "onnx>=1.17.0",
+    "onnxruntime>=1.20.1",
+    "pandas>=2.2.3",
+    "scikit-learn>=1.6.0",
+    "torch>=2.5.1",
+    "transformers>=4.47.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.4",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu" },
+]
+torchvision = [
+  { index = "pytorch-cpu" },
+]
