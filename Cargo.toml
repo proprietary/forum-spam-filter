@@ -1,0 +1,44 @@
+[package]
+name = "forum-spam-filter"
+authors = ["Zelly Snyder <zelcon@zelcon.net>"]
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+
+[[bin]]
+name = "cli"
+path = "src/cli.rs"
+
+[[bin]]
+name = "rpc"
+path = "src/rpc.rs"
+
+[dependencies]
+ndarray = "0.16.1"
+ort = { version = "2.0.0-rc.9", features = ["ndarray"] }
+prost = "0.13.4"
+serde = { version = "1.0.217", features = ["derive"] }
+tokenizers = "0.21.0"
+tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
+toml = "0.8.19"
+tonic = "0.12.3"
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"
+
+[build-dependencies]
+tonic-build = "0.12.3"
+
+# To use vendored libs:
+# [source.crates-io]
+# replace-with = "vendored-sources"
+
+# [source.vendored-sources]
+# directory = "vendor"
+
+# Statically link to CoreML on macOS targets
+# See: https://ort.pyke.io/perf/execution-providers#coreml
+[target.aarch64-apple-darwin]
+rustflags = ["-Clink-arg=-fapple-link-rtlib"]
+
+[target.x86_64-apple-darwin]
+rustflags = ["-Clink-arg=-fapple-link-rtlib"]

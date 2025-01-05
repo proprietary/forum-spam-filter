@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package forum_spam_filter;
+option java_package = "com.github.proprietary.forum_spam_filter";
+
+service SpamClassification {
+  rpc Classify(MaybeSpam) returns (SpamOrHam);
+}
+
+message MaybeSpam {
+  string text = 1;
+}
+
+message SpamOrHam {
+  float probability = 1;
+}
