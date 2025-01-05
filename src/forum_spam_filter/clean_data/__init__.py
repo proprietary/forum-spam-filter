@@ -1,10 +1,7 @@
 import pandas as pd
 from pathlib import Path
-
-LABEL_MAP = {
-    "ham": 0,
-    "spam": 1,
-}
+from .spam_assassin import load_spam_assassin
+from .util import LABEL_MAP
 
 
 def load_sms_spam_collection() -> pd.DataFrame:
@@ -17,15 +14,6 @@ def load_sms_spam_collection() -> pd.DataFrame:
     df = pd.read_csv(path, sep="\t", header=None, names=["label", "text"])
     df["label"] = df["label"].map(lambda x: LABEL_MAP[x])
     return df
-
-
-def load_spam_assassin():
-    """
-    Load the Spam Assassin dataset.
-
-    See: https://spamassassin.apache.org/old/publiccorpus/
-    """
-    raise NotImplementedError
 
 
 def load_enron_spam():
@@ -41,5 +29,6 @@ def load_datasets() -> pd.DataFrame:
     return pd.concat(
         [
             load_sms_spam_collection(),
+            load_spam_assassin(),
         ]
     )

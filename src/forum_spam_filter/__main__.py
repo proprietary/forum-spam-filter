@@ -10,7 +10,8 @@ def main():
     train_dataset, test_dataset, tokenizer = preprocess_data(df)
     train(train_dataset, test_dataset, Path.cwd() / "results" / "model")
     export_model(
-        Path.cwd() / "results" / "model", tokenizer, Path.cwd() / "results" / "onnx"
+        Path.cwd() / "results" / "model",
+        tokenizer, Path.cwd() / "results" / "onnx",
     )
 
 
