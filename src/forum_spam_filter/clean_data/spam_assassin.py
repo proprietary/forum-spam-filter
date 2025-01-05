@@ -12,7 +12,7 @@ from pathlib import Path
 import tarfile
 from typing import IO
 from bs4 import BeautifulSoup
-from .util import LABEL_MAP, chunk_greater_than_512
+from .util import LABEL_MAP, chunk_greater_than_512_list
 
 tarballs = [
     "20021010_easy_ham.tar.bz2",
@@ -70,8 +70,8 @@ def load_spam_assassin() -> pd.DataFrame:
                         spam.append(body)
                     else:
                         ham.append(body)
-    ham = chunk_greater_than_512(ham)
-    spam = chunk_greater_than_512(spam)
+    ham = chunk_greater_than_512_list(ham)
+    spam = chunk_greater_than_512_list(spam)
     return pd.DataFrame(
         {
             "text": ham + spam,

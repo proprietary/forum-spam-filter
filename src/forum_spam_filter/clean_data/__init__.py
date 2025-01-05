@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
 from .spam_assassin import load_spam_assassin
+from .private_dataset import load_private_dataset
 from .util import LABEL_MAP
 
 
@@ -28,6 +29,7 @@ def load_enron_spam():
 def load_datasets() -> pd.DataFrame:
     return pd.concat(
         [
+            load_private_dataset(),
             load_sms_spam_collection(),
             load_spam_assassin(),
         ]

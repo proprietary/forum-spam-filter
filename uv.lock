@@ -218,6 +218,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "datasets" },
+    { name = "mariadb" },
     { name = "numpy" },
     { name = "onnx" },
     { name = "onnxruntime" },
@@ -240,6 +241,7 @@ test = [
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.12.3" },
     { name = "datasets", specifier = ">=3.2.0" },
+    { name = "mariadb", specifier = ">=1.1.11" },
     { name = "numpy", specifier = ">=2.2.1" },
     { name = "onnx", specifier = ">=1.17.0" },
     { name = "onnxruntime", specifier = ">=1.20.1" },
@@ -373,6 +375,21 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/64/33/60135848598c076ce4b231e1b1895170f45fbcaeaa2c9d5e38b04db70c35/joblib-1.4.2.tar.gz", hash = "sha256:2382c5816b2636fbd20a09e0f4e9dad4736765fdfb7dca582943b9c1366b3f0e", size = 2116621 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/91/29/df4b9b42f2be0b623cbd5e2140cafcaa2bef0759a00b7b70104dcfe2fb51/joblib-1.4.2-py3-none-any.whl", hash = "sha256:06d478d5674cbc267e7496a410ee875abd68e4340feff4490bcb7afb88060ae6", size = 301817 },
+]
+
+[[package]]
+name = "mariadb"
+version = "1.1.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a1/8b/4e263dd4e631083ffaac4f3f7b03ad6fd52a3736967aea06ef946a824ff6/mariadb-1.1.11.tar.gz", hash = "sha256:cf6647cee081e21d0994b409ba8c8fa2077f3972f1de3627c5502fb31d14f806", size = 85604 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1b/5b/3ff578d7fb61196b9a61c8e78b0fcfe4a9c06ecd1a53293014fe0900c702/mariadb-1.1.11-cp312-cp312-win32.whl", hash = "sha256:f6dfdc954edf02b6519419a054798cda6034dc459d1d482e3329e37aa27d34f0", size = 183447 },
+    { url = "https://files.pythonhosted.org/packages/72/0e/ad5ec8b2d2b71fe2ce7604320d35d13a96334b2788168f2d3859a5844f93/mariadb-1.1.11-cp312-cp312-win_amd64.whl", hash = "sha256:2e72ea65f1d7d8563ee84e172f2a583193092bdb6ff83c470ca9722873273ecc", size = 199946 },
+    { url = "https://files.pythonhosted.org/packages/1e/17/e5f8f971c17ceaf9485b81e4986388f383740b27bd287b952bb72f320e0a/mariadb-1.1.11-cp313-cp313-win32.whl", hash = "sha256:d7302ccd15f0beee7b286885cbf6ac71ddc240374691d669784d99f89ba34d79", size = 183424 },
+    { url = "https://files.pythonhosted.org/packages/7f/35/93a261e7dbc6f335e89ccea02b62306d361945d9689c0470615d1c4a41a5/mariadb-1.1.11-cp313-cp313-win_amd64.whl", hash = "sha256:c1992ebf9c6f012ac158e33fef9f2c4ba899f721064c4ae3a3489233793296c0", size = 200000 },
 ]
 
 [[package]]

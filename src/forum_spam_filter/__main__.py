@@ -11,7 +11,8 @@ def main():
     train(train_dataset, test_dataset, Path.cwd() / "results" / "model")
     export_model(
         Path.cwd() / "results" / "model",
-        tokenizer, Path.cwd() / "results" / "onnx",
+        tokenizer,
+        Path.cwd() / "results" / "onnx",
     )
 
 
