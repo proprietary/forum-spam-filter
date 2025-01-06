@@ -1,0 +1,10 @@
+services:
+    proprietary.spamfilter.listener:
+        class: proprietary\spamfilter\event\main_listener
+        arguments:
+            - '@language'
+            - '@dbal.conn'
+            - '@log'
+            - '@service_container'
+        tags:
+            - { name: event.listener }
