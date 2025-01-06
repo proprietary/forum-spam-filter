@@ -15,8 +15,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
+
+      - name: Install build dependencies
+        run: sudo apt-get install -y libssl-dev build-essential
 
       - name: Install Cross
         run: cargo install cross --git https://github.com/cross-rs/cross
