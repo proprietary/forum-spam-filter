@@ -18,11 +18,7 @@ impl Default for SpamTextClassifier {
     fn default() -> Self {
         let tokenizer =
             Tokenizer::from_bytes(DISTILBERT_BASE_TOKENIZER).expect("Failed to load tokenizer");
-        ort::init()
-            .with_name("forum_spam_filter")
-            .with_telemetry(false)
-            .commit()
-            .expect("Failed to initialize ONNX runtime");
+        load_onnx_runtime().expect("Failed to initialize ONNX runtime");
         let model_path = std::env::var("MODEL_PATH").expect("MODEL_PATH not set");
         let model_path = PathBuf::from(model_path);
         let session = Session::builder()
@@ -87,4 +83,13 @@ fn mean_logits(logits: ArrayView2<f32>) -> Array1<f32> {
 fn probabilities(logits: ArrayView2<f32>) -> Array1<f32> {
     let mean_logits = mean_logits(logits);
     softmax(&mean_logits)
+}
+
+pub fn load_onnx_runtime() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let dylib_path = std::env::var("ORT_DYLIB_PATH").expect("ORT_DYLIB_PATH not set");
+    ort::init_from(dylib_path)
+        .with_name("forum_spam_filter")
+        .with_telemetry(false)
+        .commit()?;
+    Ok(())
 }

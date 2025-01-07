@@ -15,7 +15,7 @@ path = "src/rpc.rs"
 
 [dependencies]
 ndarray = "0.16.1"
-ort = { version = "2.0.0-rc.9", features = ["ndarray", "half", "copy-dylibs"] }
+ort = { version = "2.0.0-rc.9", features = ["ndarray", "half", "load-dynamic"] }
 prost = "0.13.4"
 serde = { version = "1.0.217", features = ["derive"] }
 tokenizers = "0.21.0"
