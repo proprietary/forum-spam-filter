@@ -33,24 +33,20 @@ jobs:
             gcc-aarch64-linux-gnu \
             g++-aarch64-linux-gnu
 
-      - name: Install ONNX Runtime for aarch64
-        if: matrix.target == 'aarch64-unknown-linux-gnu'
-        run: |
-          curl -L https://github.com/microsoft/onnxruntime/releases/download/v1.20.1/onnxruntime-linux-aarch64-1.20.1.tgz \
-            | sudo tar -xz --strip-components=1 -C /usr/local
-          echo 'ORT_DYLIB_PATH="/usr/local/lib/libonnxruntime.so"' >> $GITHUB_ENV
-
-      - name: Install ONNX Runtime for x86_64
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
-        run: |
-          curl -L https://github.com/microsoft/onnxruntime/releases/download/v1.20.1/onnxruntime-linux-x64-1.20.1.tgz \
-            | sudo tar -xz --strip-components=1 -C /usr/local
-          echo 'ORT_DYLIB_PATH="/usr/local/lib/libonnxruntime.so"' >> $GITHUB_ENV
-
       - name: Add Rust target
         run: rustup target add ${{ matrix.target }}
 
+      - name: Set linker for aarch64 target
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+            mkdir -p .cargo
+            echo '[target.aarch64-unknown-linux-gnu]' >> .cargo/config.toml
+            echo 'linker = "aarch64-linux-gnu-gcc"' >> .cargo/config.toml
+
       - name: Build release binary
+        env:
+          CC_aarch64_unknown_linux_gnu: aarch64-linux-gnu-gcc
+          CXX_aarch64_unknown_linux_gnu: aarch64-linux-gnu-g++
         run: |
           cargo build --release --target ${{ matrix.target }}
 
