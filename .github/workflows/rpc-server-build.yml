@@ -24,8 +24,7 @@ jobs:
             build-essential \
             cmake \
             g++ \
-            libstdc++-11-dev \
-            protobuf-compiler
+            libstdc++-11-dev
 
       - name: Install dependencies for cross-compilation
         if: matrix.target == 'aarch64-unknown-linux-gnu'
@@ -34,27 +33,24 @@ jobs:
             gcc-aarch64-linux-gnu \
             g++-aarch64-linux-gnu
 
-      - name: Compile ONNX Runtime (only for aarch64)
+      - name: Install ONNX Runtime for aarch64
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
-          git clone https://github.com/microsoft/onnxruntime --recursive \
-              --branch 'v1.20.1' --single-branch --depth 1
-          cd onnxruntime
-          # Pass --arm64 and an out-of-tree build dir to avoid conflicts
-          ./build.sh --update --build --config Release --parallel \
-                     --compile_no_warning_as_error --skip_submodule_sync \
-                     --arm64 \
-                     --build_dir build-aarch64
-          cd ..
+          curl -L https://github.com/microsoft/onnxruntime/releases/download/v1.20.1/onnxruntime-linux-aarch64-1.20.1.tgz \
+            | sudo tar -xz --strip-components=1 -C /usr/local
+
+      - name: Install ONNX Runtime for x86_64
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        run: |
+          curl -L https://github.com/microsoft/onnxruntime/releases/download/v1.20.1/onnxruntime-linux-x64-1.20.1.tgz \
+            | sudo tar -xz --strip-components=1 -C /usr/local
 
       - name: Add Rust target
         run: rustup target add ${{ matrix.target }}
 
       - name: Build release binary
         run: |
-          if [ "${{ matrix.target }}" = "aarch64-unknown-linux-gnu" ]; then
-            export ORT_LIB_LOCATION="$(pwd)/onnxruntime/build-aarch64/Linux/Release"
-          fi
+          export ORT_LIB_LOCATION="/usr/local/lib/libonnxruntime.so"
           cargo build --release --target ${{ matrix.target }}
 
       - name: Upload artifact
