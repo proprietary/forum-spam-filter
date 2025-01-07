@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -36,7 +36,7 @@ jobs:
       - name: Add Rust target
         run: rustup target add ${{ matrix.target }}
 
-      - name: Set linker for aarch64 target
+      - name: Make cargo use the correct linker for cross-compilation
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
             mkdir -p .cargo
@@ -53,15 +53,47 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target }}-binary
+          name: rpc-${{ matrix.target }}
           path: target/${{ matrix.target }}/release/rpc
 
-      - name: Upload binaries
-        uses: actions/upload-release-asset@v1
+  release:
+    needs: build-matrix
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "target/${{ matrix.target }}/release/rpc"
-          asset_name: rpc-${{ matrix.target }}
-          asset_content_type: application/octet-stream
+          path: .
+
+      - name: List artifacts
+        run: ls -R
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        run: |
+            RAW_URL="${{ steps.create_release.outputs.upload_url }}"
+            CLEAN_URL="${RAW_URL%\{*}"
+            targets=("x86_64-unknown-linux-gnu" "aarch64-unknown-linux-gnu")
+            for target in "${targets[@]}"; do
+                FILE="rpc-$target/rpc"
+                echo "Uploading $FILE..."
+                curl -sSL \
+                -X POST \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Content-Type: application/octet-stream" \
+                --data-binary @"$FILE" \
+                "${CLEAN_URL}?name=rpc-$target"
+            done
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
