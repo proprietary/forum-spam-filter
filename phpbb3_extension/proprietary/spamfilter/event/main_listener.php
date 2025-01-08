@@ -77,7 +77,10 @@ class main_listener implements EventSubscriberInterface
         $request->setText($text);
         list($response, $status) = $this->grpc_client->Classify($request)->wait();
         if ($status->code !== \Grpc\STATUS_OK) {
-            echo 'Error: ' . $status->details . PHP_EOL;
+            $this->log->add('critical', ANONYMOUS, '127.0.0.1', 'LOG_SPAMFILTER_GRPC_ERROR', false, array(
+                'error_code' => $status->code,
+                'error_message' => $status->details,
+            ));
             return false;
         } else {
             return $response->getProbability() > 0.8; // TODO: Make this configurable
@@ -143,36 +146,36 @@ class main_listener implements EventSubscriberInterface
                              . ', post_delete_time = ' . $time
                              . ', post_delete_reason = "' . $this->db->sql_escape($reason) . '"'
                              . ' WHERE post_id = ' . (int) $data['post_id']);
+        // Update the post counts of the forum and the topic
+        $this->db->sql_query('UPDATE ' . FORUMS_TABLE
+                             . ' SET forum_posts_unapproved = forum_posts_unapproved - 1'
+                             . ', forum_posts_softdeleted = forum_posts_softdeleted + 1'
+                             . ' WHERE forum_id = ' . (int) $data['forum_id']);
+        $this->db->sql_query('UPDATE ' . TOPICS_TABLE
+                             . ' SET topic_posts_unapproved = topic_posts_unapproved - 1'
+                             . ', topic_posts_softdeleted = topic_posts_softdeleted + 1'
+                             . ' WHERE topic_id = ' . (int) $data['topic_id']);
 
         if ((int) $topic_row['topic_first_post_id'] == (int) $data['post_id']) {
             // When this post is actually a new topic, then soft delete the topic, too.
-            $this->db->sql_query('UPDATE ' . TOPICS_TABLE
-                                 . ' SET topic_visibility = ' . ITEM_DELETED
-                                 . ', topic_delete_reason = "' . $this->db->sql_escape($reason) . '"'
-                                 . ', topic_delete_user = ' . ANONYMOUS
-                                 . ', topic_delete_time = ' . $time
-                                 . ' WHERE topic_id = ' . (int) $data['topic_id']);
+            $this->soft_delete_topic((int) $data['topic_id'], (int) $data['forum_id'], $reason, $time);
             // Delete the notification to mods to approve the topic
             $this->notification_manager->delete_notifications('notification.type.topic_in_queue', $notification_data);
         } elseif ((int) $topic_row['topic_last_post_id'] == (int) $data['post_id']) {
-            // When this post is the last post of a topic, then update the last post of the topic.
             $result = $this->db->sql_query('SELECT MAX(post_id) as last_post_id, COUNT(post_id) as visible_posts'
                                            . ' FROM ' . POSTS_TABLE
                                            . ' WHERE topic_id = ' . (int) $data['topic_id']
                                            . ' AND post_visibility = ' . ITEM_APPROVED);
             $new_topic_stats = $this->db->sql_fetchrow($result);
             $this->db->sql_freeresult($result);
-            if ($new_last_post) {
-                $this->db->sql_query('UPDATE ' . TOPICS_TABLE
-                                     . ' SET topic_last_post_id = ' . (int) $row['post_id']
-                                     . ' WHERE topic_id = ' . (int) $data['topic_id']);
-                // If there are no visible posts left in this topic, then soft delete the topic.
-                if ((int) $new_last_post['visible_posts'] == 0) {
+            if ($new_topic_stats) {
+                if ((int) $new_topic_stats['visible_posts'] == 0) {
+                    // If there are no visible posts left in this topic, then soft delete the topic.
+                    $this->soft_delete_topic((int) $data['topic_id'], (int) $data['forum_id'], $reason, $time);
+                } else {
+                    // When this post is the last post of a topic, then update the last post of the topic.
                     $this->db->sql_query('UPDATE ' . TOPICS_TABLE
-                                        . ' SET topic_visibility = ' . ITEM_DELETED
-                                        . ', topic_delete_reason = "' . $this->db->sql_escape($reason) . '"'
-                                        . ', topic_delete_user = ' . ANONYMOUS
-                                        . ', topic_delete_time = ' . $time
+                                        . ' SET topic_last_post_id = ' . (int) $row['post_id']
                                         . ' WHERE topic_id = ' . (int) $data['topic_id']);
                 }
             }
@@ -190,6 +193,20 @@ class main_listener implements EventSubscriberInterface
         if ((int) $data['poster_id'] != ANONYMOUS) {
             $this->notification_manager->add_notifications('notification.type.disapprove_post', $notification_data);
         }
+    }
+
+    private function soft_delete_topic(int $topic_id, int $forum_id, string $reason, int $time) {
+        $this->db->sql_query('UPDATE ' . TOPICS_TABLE
+                                . ' SET topic_visibility = ' . ITEM_DELETED
+                                . ', topic_delete_reason = "' . $this->db->sql_escape($reason) . '"'
+                                . ', topic_delete_user = ' . ANONYMOUS
+                                . ', topic_delete_time = ' . $time
+                                . ' WHERE topic_id = ' . $topic_id);
+        // Update post counts
+        $this->db->sql_query('UPDATE ' . FORUMS_TABLE
+                             . ' SET forum_topics_unapproved = forum_topics_unapproved - 1'
+                             . ', forum_topics_softdeleted = forum_topics_softdeleted + 1'
+                             . ' WHERE forum_id = ' . $forum_id);
     }
 
     /**

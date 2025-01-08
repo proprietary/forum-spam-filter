@@ -27,4 +27,5 @@ if (empty($lang) || !is_array($lang)) {
 $lang = array_merge($lang, [
     'SPAMFILTER_LOG_DISAPPROVAL' => 'Post detected as spam by bot',
     'SPAMFILTER_DISAPPROVAL_REASON' => 'Post rejected as spam by automated filtering. Contact admin to appeal',
+    'LOG_SPAMFILTER_GRPC_ERROR' => 'Spam filter gRPC service errored',
 ]);
