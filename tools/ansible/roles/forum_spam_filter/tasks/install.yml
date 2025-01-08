@@ -23,7 +23,6 @@
       - GIT_COMMIT_ID
       - ThirdPartyNotices.txt
       - Privacy.md
-    mode: "0644"
     owner: "{{ forum_spam_filter_user }}"
     group: "{{ forum_spam_filter_group }}"
     creates: "{{ forum_spam_filter_onnxruntime_prefix }}/lib/libonnxruntime.so"
