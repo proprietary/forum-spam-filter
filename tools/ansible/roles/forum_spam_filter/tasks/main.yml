@@ -1,0 +1,21 @@
+- name: Create user and group
+  become: true
+  ansible.builtin.import_tasks: prerequisites.yml
+
+- name: Set up PHP extensions
+  become: true
+  ansible.builtin.import_tasks: php.yml
+
+- name: Build spam filter gRPC server
+  when: forum_spam_filter_build_from_source
+  become: true
+  ansible.builtin.import_tasks: build.yml
+
+- name: Fetch prebuilt binary for the gRPC server
+  when: not forum_spam_filter_build_from_source
+  become: true
+  ansible.builtin.import_tasks: prebuilt.yml
+
+- name: Install spam filter gRPC server
+  become: true
+  ansible.builtin.import_tasks: install.yml

@@ -1,0 +1,11 @@
+forum_spam_filter_dir: "/opt/forum-spam-filter"
+forum_spam_filter_grpc_port: "60066"
+forum_spam_filter_user: "forum_spam_filter"
+forum_spam_filter_group: "forum_spam_filter"
+
+forum_spam_filter_repo: "https://github.com/proprietary/forum-spam-filter"
+forum_spam_filter_version: "v0.1.0"
+
+forum_spam_filter_onnxruntime_prefix: "{{ forum_spam_filter_dir }}/onnxruntime"
+
+forum_spam_filter_build_from_source: false

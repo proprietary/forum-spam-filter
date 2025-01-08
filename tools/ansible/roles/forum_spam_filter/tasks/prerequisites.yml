@@ -1,0 +1,28 @@
+- name: Create spam filter group
+  ansible.builtin.group:
+    name: "{{ forum_spam_filter_group }}"
+    state: present
+
+- name: Create spam filter user
+  ansible.builtin.user:
+    name: "{{ forum_spam_filter_user }}"
+    group: "{{ forum_spam_filter_group }}"
+    shell: /sbin/nologin
+    system: true
+    state: present
+
+- name: Create data directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ forum_spam_filter_dir }}"
+    owner: "{{ forum_spam_filter_user }}"
+    group: "{{ forum_spam_filter_group }}"
+    mode: "0755"
+
+- name: Create ONNX Runtime directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ forum_spam_filter_onnxruntime_prefix }}"
+    owner: "{{ forum_spam_filter_user }}"
+    group: "{{ forum_spam_filter_group }}"
+    mode: "0755"

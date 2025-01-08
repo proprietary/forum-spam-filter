@@ -1,0 +1,43 @@
+- name: Check that the architecture is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_architecture in ['aarch64', 'x86_64']
+
+- name: Copy pretrained model
+  ansible.builtin.copy:
+    src: model_quantized.onnx
+    dest: "{{ forum_spam_filter_model_path }}"
+    remote_src: false
+    owner: "{{ forum_spam_filter_user }}"
+    group: "{{ forum_spam_filter_group }}"
+    mode: "0644"
+
+- name: Download ONNX Runtime
+  ansible.builtin.unarchive:
+    src: "{{ forum_spam_filter_onnx_runtime_release_aarch64 if ansible_architecture == 'aarch64' else forum_spam_filter_onnx_runtime_release_x86_64 }}"
+    dest: "{{ forum_spam_filter_onnxruntime_prefix }}"
+    remote_src: true
+    extra_opts: [--strip-components=1]
+    exclude:
+      - LICENSE
+      - GIT_COMMIT_ID
+      - ThirdPartyNotices.txt
+      - Privacy.md
+    mode: "0644"
+    owner: "{{ forum_spam_filter_user }}"
+    group: "{{ forum_spam_filter_group }}"
+    creates: "{{ forum_spam_filter_onnxruntime_prefix }}/lib/libonnxruntime.so"
+
+- name: Render systemd service file
+  ansible.builtin.template:
+    src: forum-spam-filter.service.j2
+    dest: /etc/systemd/system/forum-spam-filter.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Start forum-spam-filter service
+  ansible.builtin.systemd:
+    name: forum-spam-filter
+    state: started
+    enabled: true

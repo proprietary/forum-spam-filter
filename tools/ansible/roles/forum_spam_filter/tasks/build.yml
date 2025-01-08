@@ -1,0 +1,62 @@
+- name: Install prerequisites
+  when: ansible_os_family == "RedHat"
+  ansible.builtin.dnf:
+    name:
+      - gcc
+      - g++
+      - libtool
+      - autoconf
+      - cmake
+      - git
+    state: present
+
+- name: Install prerequisites
+  when: ansible_os_family == "Debian"
+  ansible.builtin.apt:
+    name:
+      - cmake
+      - git
+      - build-essential
+    state: present
+
+- name: Download rustup
+  ansible.builtin.get_url:
+    url: https://sh.rustup.rs
+    dest: "{{ ansible_env.HOME }}/rustup"
+    mode: "a+x"
+
+- name: Install rustc
+  ansible.builtin.command:
+    cmd: "{{ ansible_env.HOME }}/rustup -y"
+    creates: "{{ ansible_env.HOME }}/.cargo/bin/cargo"
+  args:
+    chdir: "{{ ansible_env.HOME }}"
+
+- name: Add cargo to PATH
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    line: "source $HOME/.cargo/env"
+    create: true
+    mode: "0644"
+
+- name: Fetch source code
+  ansible.builtin.git:
+    repo: "{{ forum_spam_filter_repo }}"
+    dest: "{{ forum_spam_filter_dir }}"
+    version: "{{ forum_spam_filter_version }}"
+    depth: 1
+
+- name: Build release binary
+  ansible.builtin.command:
+    cmd: "{{ ansible_env.HOME }}/.cargo/bin/cargo build --release"
+    chdir: "{{ forum_spam_filter_dir }}"
+    creates: "{{ forum_spam_filter_dir }}/target/release/rpc"
+
+- name: Install release binary
+  ansible.builtin.copy:
+    src: "{{ forum_spam_filter_dir }}/target/release/rpc"
+    dest: "{{ forum_spam_filter_dir }}/rpc"
+    remote_src: true
+    group: "{{ forum_spam_filter_group }}"
+    owner: "{{ forum_spam_filter_user }}"
+    mode: "0755"

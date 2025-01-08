@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Spam Classifier gRPC Server
+Documentation=https://github.com/proprietary/forum-spam-filter
+Requires=network.target
+After=network.target
+
+[Service]
+Type=simple
+Environment="ORT_DYLIB_PATH={{ forum_spam_filter_onnxruntime_prefix }}/lib/libonnxruntime.so"
+Environment="MODEL_PATH={{ forum_spam_filter_model_path }}"
+Environment="GRPC_PORT={{ forum_spam_filter_grpc_port }}"
+ExecStart={{ forum_spam_filter_dir }}/rpc
+User={{ forum_spam_filter_user }}
+Group={{ forum_spam_filter_group }}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=forum-spam-filter.service

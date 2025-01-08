@@ -1,0 +1,7 @@
+- name: Fetch prebuilt binary from Github
+  ansible.builtin.get_url:
+    url: "{{ forum_spam_filter_repo }}/releases/download/{{ forum_spam_filter_version }}/rpc-aarch64-unknown-linux-gnu"
+    dest: "{{ forum_spam_filter_dir }}/rpc"
+    group: "{{ forum_spam_filter_group }}"
+    owner: "{{ forum_spam_filter_user }}"
+    mode: "0755"

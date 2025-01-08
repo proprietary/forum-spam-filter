@@ -1,0 +1,36 @@
+- name: Install prerequisites for building PHP extensions
+  ansible.builtin.dnf:
+    name:
+      - gcc
+      - g++
+      - libtool
+      - autoconf
+      - cmake
+      - git
+    state: present
+
+- name: Install gRPC for PHP using pecl
+  community.general.pear:
+    name: pecl/grpc
+    state: present
+
+- name: Add grpc.so to php.ini
+  ansible.builtin.copy:
+    content: "extension=grpc.so"
+    dest: /etc/php.d/99-grpc.ini
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install protobuf for PHP using pecl
+  community.general.pear:
+    name: pecl/protobuf
+    state: present
+
+- name: Add protobuf.so to php.ini
+  ansible.builtin.copy:
+    content: "extension=protobuf.so"
+    dest: /etc/php.d/99-protobuf.ini
+    owner: root
+    group: root
+    mode: "0644"

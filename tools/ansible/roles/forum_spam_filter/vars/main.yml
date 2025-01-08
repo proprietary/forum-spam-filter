@@ -1,0 +1,4 @@
+forum_spam_filter_model_filename: "model_quantized.onnx"
+forum_spam_filter_model_path: "{{ forum_spam_filter_dir }}/{{ forum_spam_filter_model_filename }}"
+forum_spam_filter_onnx_runtime_release_aarch64: "https://github.com/microsoft/onnxruntime/releases/download/v1.20.1/onnxruntime-linux-aarch64-1.20.1.tgz"
+forum_spam_filter_onnx_runtime_release_x86_64: "https://github.com/microsoft/onnxruntime/releases/download/v1.20.1/onnxruntime-linux-x64-1.20.1.tgz"
