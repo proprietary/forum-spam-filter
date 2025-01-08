@@ -50,6 +50,8 @@ It is a DistilBERT model fine-tuned from the original `distilbert-base-uncased`.
 
 A pretrained model is available [in this repository](./results/onnx_quantized/model_quantized.onnx)
 
+Note: This model is quantized for the ARM64 instruction set.
+
 ## Setup and usage
 
 ### gRPC server
