@@ -14,7 +14,9 @@ def chunk_greater_than_512(s: str, token_limit: int = 512) -> list[str]:
     ]
 
 
-def chunk_greater_than_512_list(lst: Sequence[str], token_limit: int = 512) -> list[str]:
+def chunk_greater_than_512_list(
+    lst: Sequence[str], token_limit: int = 512
+) -> list[str]:
     res = []
     for s in lst:
         res.extend(chunk_greater_than_512(s, token_limit))
