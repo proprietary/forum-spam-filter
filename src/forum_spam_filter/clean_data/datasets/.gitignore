@@ -1,1 +1,7 @@
 private*
+
+# Too big to version control and don't want to exceed Github's Git LFS limits
+trec*.tgz
+
+# Don't version control the generated post-processed files
+trec_public_corpus.csv

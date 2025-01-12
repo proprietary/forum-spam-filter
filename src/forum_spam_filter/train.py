@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 training_args = TrainingArguments(
     output_dir="./results",
-    num_train_epochs=3,
+    num_train_epochs=5,
     per_device_train_batch_size=16,
     per_device_eval_batch_size=32,
     warmup_steps=500,

@@ -5,12 +5,14 @@ description = "DistilBERT classifier for forum spam"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "accelerate>=1.2.1",
     "beautifulsoup4>=4.12.3",
     "datasets>=3.2.0",
     "mariadb>=1.1.11",
     "numpy>=2.2.1",
     "onnx>=1.17.0",
     "onnxruntime>=1.20.1",
+    "optimum>=1.23.3",
     "pandas>=2.2.3",
     "scikit-learn>=1.6.0",
     "torch>=2.5.1",
@@ -26,14 +28,6 @@ test = [
 ]
 
 [[tool.uv.index]]
-name = "pytorch-cpu"
-url = "https://download.pytorch.org/whl/cpu"
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
 explicit = true
-
-[tool.uv.sources]
-torch = [
-  { index = "pytorch-cpu" },
-]
-torchvision = [
-  { index = "pytorch-cpu" },
-]

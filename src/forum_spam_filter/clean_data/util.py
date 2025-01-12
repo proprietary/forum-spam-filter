@@ -1,4 +1,5 @@
 from typing import Sequence
+from bs4 import BeautifulSoup
 
 LABEL_MAP = {
     "ham": 0,
@@ -21,3 +22,7 @@ def chunk_greater_than_512_list(
     for s in lst:
         res.extend(chunk_greater_than_512(s, token_limit))
     return res
+
+
+def clean_text(s: str) -> str:
+    return BeautifulSoup(s, "html.parser").get_text()

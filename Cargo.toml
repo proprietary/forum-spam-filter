@@ -26,7 +26,7 @@ tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
 
 [build-dependencies]
-protobuf-src = "2.1.0"
+#protobuf-src = "2.1.0"
 tonic-build = "0.12.3"
 
 # To use vendored libs:
@@ -39,7 +39,7 @@ tonic-build = "0.12.3"
 
 [target.aarch64-apple-darwin.dependencies.ort]
 version = "2.0.0-rc.9"
-features = ["coreml", "ndarray", "download-binaries", "half", "copy-dylibs"]
+features = ["coreml", "ndarray", "half", "load-dynamic"]
 
 # [target.aarch64-unknown-linux-gnu.dependencies.ort]
 # version = "2.0.0-rc.9"

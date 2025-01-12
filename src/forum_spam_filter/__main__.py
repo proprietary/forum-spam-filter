@@ -3,6 +3,9 @@ from .preprocess_data import preprocess_data
 from .train import train
 from .export_model import export_model
 from pathlib import Path
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%m-%d %H:%M:%S%z")
 
 
 def main():
