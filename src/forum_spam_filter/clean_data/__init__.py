@@ -31,7 +31,15 @@ def load_enron_spam():
 
 def load_datasets() -> pd.DataFrame:
     with ProcessPoolExecutor() as pool:
-        futs = [pool.submit(t) for t in [load_sms_spam_collection, load_spam_assassin, load_csdmc2010_corpus, load_trec_dataset]]
+        futs = [
+            pool.submit(t)
+            for t in [
+                load_sms_spam_collection,
+                load_spam_assassin,
+                load_csdmc2010_corpus,
+                load_trec_dataset,
+            ]
+        ]
         f5 = pool.submit(load_private_dataset)
         datasets = [f.result() for f in futs]
         if f5.result() is not None and f5.exception() is None:

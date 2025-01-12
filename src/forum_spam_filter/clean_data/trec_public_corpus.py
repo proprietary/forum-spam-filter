@@ -14,10 +14,12 @@ import multiprocessing as mp
 
 LOG = logging.getLogger(__name__)
 
+
 class _Resource(TypedDict):
     url: str
     referrer: str
     md5: str
+
 
 _RESOURCES: list[_Resource] = [
     {
@@ -39,21 +41,27 @@ _RESOURCES: list[_Resource] = [
 
 _DEFAULT_DATASET_PATH = Path(__file__).parent / "datasets"
 
-def _download_if_not_present(dest_dir = _DEFAULT_DATASET_PATH):
+
+def _download_if_not_present(dest_dir=_DEFAULT_DATASET_PATH):
     for r in _RESOURCES:
         target = dest_dir / os.path.basename(r["url"])
         if target.exists() and hashlib.md5(target.read_bytes()).hexdigest() == r["md5"]:
-            LOG.info(f"Skipping download of {r['url']} as it already exists at {target}")
+            LOG.info(
+                f"Skipping download of {r['url']} as it already exists at {target}"
+            )
         else:
             LOG.info(f"Downloading {r['url']} to {target}")
             req = urllib.request.Request(r["url"], headers={"Referer": r["referrer"]})
             with (
-                    urllib.request.urlopen(req) as response,
-                    target.open("wb") as target_file,
+                urllib.request.urlopen(req) as response,
+                target.open("wb") as target_file,
             ):
                 target_file.write(response.read())
 
-def _process_email_batch(tb: Path, batch: list[tuple[str, str]]) -> list[dict[str, str | int]]:
+
+def _process_email_batch(
+    tb: Path, batch: list[tuple[str, str]]
+) -> list[dict[str, str | int]]:
     res = []
     with tarfile.open(tb, mode="r:gz") as tar:
         for label, filename in batch:
@@ -63,6 +71,7 @@ def _process_email_batch(tb: Path, batch: list[tuple[str, str]]) -> list[dict[st
             label_idx = LABEL_MAP[label]
             res.append({"text": body, "label": label_idx})
     return res
+
 
 def _process_tarball(tb: Path) -> pd.DataFrame:
     with tarfile.open(tb, mode="r:gz") as tar:
@@ -77,7 +86,9 @@ def _process_tarball(tb: Path) -> pd.DataFrame:
             if len(line_parts) == 1 and line_parts[0] == "":
                 continue
             if len(line_parts) != 2:
-                LOG.warning(f"Skipping line: \"{line}\" in {tb} because it does not have a space in it")
+                LOG.warning(
+                    f'Skipping line: "{line}" in {tb} because it does not have a space in it'
+                )
                 continue
             label, filename = line_parts
             filename = filename.removeprefix("../data/")
@@ -88,8 +99,12 @@ def _process_tarball(tb: Path) -> pd.DataFrame:
         fn = partial(_process_email_batch, tb)
         batch_size = (len(email_metadata) + mp.cpu_count() - 1) // mp.cpu_count()
         for i in range(0, len(email_metadata), batch_size):
-            f.append(exc.submit(fn, email_metadata[i:i + batch_size]))
-        return pd.concat([pd.DataFrame(res) for res in [future.result() for future in f]], ignore_index=True)
+            f.append(exc.submit(fn, email_metadata[i : i + batch_size]))
+        return pd.concat(
+            [pd.DataFrame(res) for res in [future.result() for future in f]],
+            ignore_index=True,
+        )
+
 
 def load_trec_dataset(dest_dir: Path = _DEFAULT_DATASET_PATH) -> pd.DataFrame:
     _download_if_not_present(dest_dir)

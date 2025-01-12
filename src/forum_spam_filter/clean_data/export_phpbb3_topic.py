@@ -19,15 +19,15 @@ from .util import LABEL_MAP
 
 
 def export_phpbb3_forum(
-        output: typing.TextIO,
-        host: str,
-        port: int,
-        user: str,
-        password: str,
-        database: str,
-        table_prefix: str,
-        forum_id: int,
-        label: str,
+    output: typing.TextIO,
+    host: str,
+    port: int,
+    user: str,
+    password: str,
+    database: str,
+    table_prefix: str,
+    forum_id: int,
+    label: str,
 ) -> None:
     writer = csv.DictWriter(
         output,

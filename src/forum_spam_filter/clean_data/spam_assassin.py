@@ -26,6 +26,7 @@ tarballs = [
     "20050311_spam_2.tar.bz2",
 ]
 
+
 def _safe_decode(bytes_content: str, encoding: str) -> str:
     try:
         return bytes_content.decode(encoding, errors="ignore")
